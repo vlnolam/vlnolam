@@ -1,0 +1,5 @@
+version: 1
+stack: webserver
+
+services:
+  - name: web

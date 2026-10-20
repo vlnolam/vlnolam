@@ -1,7 +1,18 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+
+	"github.com/vlnolam/vlnolam/orchestrator/internal/config"
+)
 
 func main() {
-	fmt.Println("Hello, Vlnolam!")
+	stack, err := config.ConfigFromFile("config.yaml")
+	if err != nil {
+		fmt.Printf("%v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("Parsed config: %+v\n", stack)
 }
