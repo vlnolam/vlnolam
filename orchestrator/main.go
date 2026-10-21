@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	stack, err := config.ConfigFromFile("config.yaml")
+	stack, err := config.ParseFile("config.yaml")
 	if err != nil {
 		fmt.Printf("%v\n", err)
 		os.Exit(1)

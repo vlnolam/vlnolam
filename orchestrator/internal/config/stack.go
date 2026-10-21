@@ -34,7 +34,7 @@ func (sc *StackConfig) Validate() *errors.Error {
 	return nil
 }
 
-func ConfigFromString(data string) (*StackConfig, *errors.Error) {
+func ParseString(data string) (*StackConfig, *errors.Error) {
 	decoder := yaml.NewDecoder(bytes.NewReader([]byte(data)))
 	decoder.KnownFields(true)
 
@@ -50,11 +50,11 @@ func ConfigFromString(data string) (*StackConfig, *errors.Error) {
 	return &stack, nil
 }
 
-func ConfigFromFile(path string) (*StackConfig, *errors.Error) {
+func ParseFile(path string) (*StackConfig, *errors.Error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, errors.Wrap(errors.ErrFile, err)
 	}
 
-	return ConfigFromString(string(data))
+	return ParseString(string(data))
 }
