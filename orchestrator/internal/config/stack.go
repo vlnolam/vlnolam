@@ -19,18 +19,20 @@ type Stack struct {
 
 func (sc *Stack) Validate() *errors.Error {
 	if sc.Stack == "" {
-		return errors.New(errors.ErrConfigValidation, "stack name is required")
+		return errors.New(errors.ErrConfigValidation, "stack name is required", nil)
 	}
 
 	if sc.Version < minVersion || sc.Version > maxVersion {
-		return errors.New(errors.ErrConfigValidation, "version must be between %d and %d", minVersion, maxVersion)
+		return errors.New(errors.ErrConfigValidation, "version out of accepted bounds", errors.Data{"min": maxVersion, "max": maxVersion})
 	}
 
 	for _, svc := range sc.Services {
 		if err := svc.Validate(); err != nil {
-			return svc.WrapError(err)
+			err.Data["service"] = svc.Name
+			return err
 		}
 	}
+
 	return nil
 }
 

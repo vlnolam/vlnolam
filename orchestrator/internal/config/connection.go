@@ -59,17 +59,17 @@ func (c *TCPUDPConnection) Validate(dir ConnectionDirection) *errors.Error {
 	switch dir {
 	case EgressConnection:
 		if c.Target == nil {
-			return errors.New(errors.ErrConfigValidation, "target required for egress connections")
+			return errors.New(errors.ErrConfigValidation, "target required for egress connections", nil)
 		}
 
 	case IngressConnection:
 		if c.Source == nil {
-			return errors.New(errors.ErrConfigValidation, "source required for ingress connections")
+			return errors.New(errors.ErrConfigValidation, "source required for ingress connections", nil)
 		}
 	}
 
 	if len(c.Ports.Items) == 0 {
-		return errors.New(errors.ErrConfigValidation, "no ports specified")
+		return errors.New(errors.ErrConfigValidation, "no ports specified", nil)
 	}
 
 	return nil

@@ -10,22 +10,28 @@ const (
 	ErrConfigParsing    ErrorCode = 1002 // YAML parsing error
 )
 
+type Data map[string]any
+
 type Error struct {
-	Code ErrorCode
-	Msg  string
+	Data Data
 }
 
 func (e *Error) Error() string {
-	return fmt.Sprintf("error %d: %s", e.Code, e.Msg)
+	return fmt.Sprintf("error %+v", e.Data)
 }
 
-// New creates an error with code and formatted message.
-// Works like fmt.Errorf: New(code, "message") or New(code, "version %d", version)
-func New(code ErrorCode, format string, a ...interface{}) *Error {
-	return &Error{Code: code, Msg: fmt.Sprintf(format, a...)}
+func New(code ErrorCode, message string, data Data) *Error {
+	if data == nil {
+		data = Data{}
+	}
+
+	data["code"] = code
+	data["msg"] = message
+
+	return &Error{Data: data}
 }
 
 // Wrap wraps a stdlib error into our application error (adds an error code)
 func Wrap(code ErrorCode, err error) *Error {
-	return &Error{Code: code, Msg: err.Error()}
+	return New(code, err.Error(), nil)
 }
