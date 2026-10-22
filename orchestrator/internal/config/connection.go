@@ -3,7 +3,15 @@ package config
 import (
 	"fmt"
 
+	"github.com/vlnolam/vlnolam/orchestrator/internal/errors"
 	"go.yaml.in/yaml/v4"
+)
+
+type ConnectionDirection int
+
+const (
+	IngressConnection ConnectionDirection = iota
+	EgressConnection
 )
 
 type Connection struct {
@@ -33,18 +41,38 @@ func (c *Connection) UnmarshalYAML(node *yaml.Node) error {
 }
 
 type ConnectionSpec interface {
+	Validate(dir ConnectionDirection) *errors.Error
 }
 
 type ConnectionHeader struct {
-	Protocol string `yaml:"protocol"`
+	Protocol string
 }
 
 type TCPUDPConnection struct {
 	ConnectionHeader
-	Target      ConnectionEndpoint
-	Source      ConnectionEndpoint
-	Ports       Ports
-	SourcePorts Ports
+	Target ConnectionEndpoint
+	Source ConnectionEndpoint
+	Ports  Ports
+}
+
+func (c *TCPUDPConnection) Validate(dir ConnectionDirection) *errors.Error {
+	switch dir {
+	case EgressConnection:
+		if c.Target == nil {
+			return errors.New(errors.ErrConfigValidation, "target required for egress connections")
+		}
+
+	case IngressConnection:
+		if c.Source == nil {
+			return errors.New(errors.ErrConfigValidation, "source required for ingress connections")
+		}
+	}
+
+	if len(c.Ports.Items) == 0 {
+		return errors.New(errors.ErrConfigValidation, "no ports specified")
+	}
+
+	return nil
 }
 
 type TCPConnection struct {

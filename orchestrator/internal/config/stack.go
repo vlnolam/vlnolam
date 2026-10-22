@@ -28,7 +28,7 @@ func (sc *Stack) Validate() *errors.Error {
 
 	for _, svc := range sc.Services {
 		if err := svc.Validate(); err != nil {
-			return err
+			return svc.WrapError(err)
 		}
 	}
 	return nil
