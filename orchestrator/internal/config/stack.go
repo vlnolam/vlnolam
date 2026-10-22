@@ -11,13 +11,13 @@ import (
 const minVersion = 1
 const maxVersion = 1
 
-type StackConfig struct {
-	Version  int             `yaml:"version"`
-	Stack    string          `yaml:"stack"`
-	Services []ServiceConfig `yaml:"services"`
+type Stack struct {
+	Version  int
+	Stack    string
+	Services []Service
 }
 
-func (sc *StackConfig) Validate() *errors.Error {
+func (sc *Stack) Validate() *errors.Error {
 	if sc.Stack == "" {
 		return errors.New(errors.ErrConfigValidation, "stack name is required")
 	}
@@ -34,11 +34,11 @@ func (sc *StackConfig) Validate() *errors.Error {
 	return nil
 }
 
-func ParseString(data string) (*StackConfig, *errors.Error) {
+func ParseString(data string) (*Stack, *errors.Error) {
 	decoder := yaml.NewDecoder(bytes.NewReader([]byte(data)))
 	decoder.KnownFields(true)
 
-	var stack StackConfig
+	var stack Stack
 	if err := decoder.Decode(&stack); err != nil {
 		return nil, errors.Wrap(errors.ErrConfigParsing, err)
 	}
@@ -50,7 +50,7 @@ func ParseString(data string) (*StackConfig, *errors.Error) {
 	return &stack, nil
 }
 
-func ParseFile(path string) (*StackConfig, *errors.Error) {
+func ParseFile(path string) (*Stack, *errors.Error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, errors.Wrap(errors.ErrFile, err)

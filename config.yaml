@@ -3,3 +3,15 @@ stack: webserver
 
 services:
   - name: web
+    egress:
+      - target: internet
+        ports: 443
+      - target: 192.168.0.0/24
+        ports: {from: 80, to: 90}
+        protocol: udp
+    ingress:
+      - source: {service: service, stack: other_stack}
+        ports:
+          - 80
+          - {from: 80, to: 90}
+        protocol: udp
