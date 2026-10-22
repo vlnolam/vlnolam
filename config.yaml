@@ -10,7 +10,7 @@ services:
         ports: {from: 80, to: 90}
         protocol: udp
     ingress:
-      - source: {service: service, stack: other_stack}
+      - source: 192.168.1.1
         ports:
           - 80
           - {from: 80, to: 90}

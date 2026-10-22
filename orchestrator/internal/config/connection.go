@@ -49,36 +49,36 @@ type ConnectionHeader struct {
 }
 
 type TCPUDPConnection struct {
-	ConnectionHeader
-	Target ConnectionEndpoint
-	Source ConnectionEndpoint
-	Ports  Ports
+	ConnectionHeader `yaml:",inline"`
+	Target           ConnectionEndpoint
+	Source           ConnectionEndpoint
+	Ports            any // TODO
 }
 
 func (c *TCPUDPConnection) Validate(dir ConnectionDirection) *errors.Error {
 	switch dir {
 	case EgressConnection:
-		if c.Target == nil {
+		if c.Target == (ConnectionEndpoint{}) {
 			return errors.New(errors.ErrConfigValidation, "target required for egress connections", nil)
 		}
 
 	case IngressConnection:
-		if c.Source == nil {
+		if c.Source == (ConnectionEndpoint{}) {
 			return errors.New(errors.ErrConfigValidation, "source required for ingress connections", nil)
 		}
 	}
 
-	if len(c.Ports.Items) == 0 {
+	/*if len(c.Ports.Items) == 0 {
 		return errors.New(errors.ErrConfigValidation, "no ports specified", nil)
-	}
+	}*/
 
 	return nil
 }
 
 type TCPConnection struct {
-	TCPUDPConnection
+	TCPUDPConnection `yaml:",inline"`
 }
 
 type UDPConnection struct {
-	TCPUDPConnection
+	TCPUDPConnection `yaml:",inline"`
 }
