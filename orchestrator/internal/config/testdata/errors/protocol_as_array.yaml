@@ -1,0 +1,10 @@
+expected_error: config_parse_error
+config:
+  version: 1
+  stack: s
+  services:
+    - name: a
+      egress:
+        - target: internet
+          ports: 80
+          protocol: [tcp]
