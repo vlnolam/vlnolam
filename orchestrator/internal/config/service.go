@@ -1,8 +1,6 @@
 package config
 
 import (
-	"strconv"
-
 	"github.com/vlnolam/vlnolam/orchestrator/internal/errors"
 )
 
@@ -19,14 +17,14 @@ func (svc *Service) Validate() *errors.Error {
 
 	for i, egress := range svc.Egress {
 		if err := egress.Validate(EgressConnection); err != nil {
-			err.Data["egress_index"] = strconv.Itoa(i)
+			err.PrependPath("egress/%d", i)
 			return err
 		}
 	}
 
 	for i, ingress := range svc.Ingress {
 		if err := ingress.Validate(IngressConnection); err != nil {
-			err.Data["ingress_index"] = strconv.Itoa(i)
+			err.PrependPath("ingress/%d", i)
 			return err
 		}
 	}

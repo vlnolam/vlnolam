@@ -14,6 +14,11 @@ func (e *Error) Error() string {
 	return fmt.Sprintf("error %+v", e.Data)
 }
 
+func (e *Error) PrependPath(msg string, a ...any) {
+	prev, _ := e.Data["path"].(string)
+	e.Data["path"] = fmt.Sprintf(msg, a...) + "/" + prev
+}
+
 func New(key string, data Data) *Error {
 	if data == nil {
 		data = Data{}

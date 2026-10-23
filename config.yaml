@@ -10,7 +10,7 @@ services:
         ports: {from: 80, to: 90}
         protocol: udp
     ingress:
-      - source: 192.168.1.1
+      - source: internet
         ports:
           - 80
           - {from: 80, to: 90}

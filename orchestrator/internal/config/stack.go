@@ -26,11 +26,22 @@ func (sc *Stack) Validate() *errors.Error {
 		return errors.New("unsupported_version", errors.Data{"min": maxVersion, "max": maxVersion})
 	}
 
-	for _, svc := range sc.Services {
+	existingServices := map[string]struct{}{}
+	for i, svc := range sc.Services {
 		if err := svc.Validate(); err != nil {
-			err.Data["service"] = svc.Name
+			if svc.Name != "" {
+				err.PrependPath("services/%s", svc.Name)
+			} else {
+				err.PrependPath("services/%d", i)
+			}
 			return err
 		}
+
+		if _, found := existingServices[svc.Name]; found {
+			return errors.New("duplicate_service_definition", errors.Data{"name": svc.Name})
+		}
+
+		existingServices[svc.Name] = struct{}{}
 	}
 
 	return nil
