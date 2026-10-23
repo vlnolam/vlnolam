@@ -71,7 +71,7 @@ type ConnectionSpec interface {
 type TCPUDPConnection struct {
 	Target ConnectionEndpoint
 	Source ConnectionEndpoint
-	Ports  any // TODO
+	Ports  Ports
 }
 
 func (c *TCPUDPConnection) Validate(dir ConnectionDirection) *errors.Error {
@@ -87,9 +87,9 @@ func (c *TCPUDPConnection) Validate(dir ConnectionDirection) *errors.Error {
 		}
 	}
 
-	/*if len(c.Ports.Items) == 0 {
-		return errors.New(errors.ErrConfigValidation, "no ports specified", nil)
-	}*/
+	if len(c.Ports.Items) == 0 {
+		return errors.New("no_ports_specified", nil)
+	}
 
 	return nil
 }

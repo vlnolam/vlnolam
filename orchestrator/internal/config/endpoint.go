@@ -37,11 +37,11 @@ func (e *ConnectionEndpoint) UnmarshalYAML(node *yaml.Node) error {
 			if err != nil {
 				return fmt.Errorf("line %d: %w", node.Line, err)
 			}
-			e.ConnectionEndpointSpec = &CIDRConnectionEndpoint{IPnet: *cidr}
+			e.ConnectionEndpointSpec = &CIDRConnectionEndpoint{*cidr}
 			return nil
 
 		} else if ip := net.ParseIP(v); ip != nil {
-			e.ConnectionEndpointSpec = &IPConnectionEndpoint{IP: ip}
+			e.ConnectionEndpointSpec = &IPConnectionEndpoint{ip}
 			return nil
 
 		} else {
@@ -62,11 +62,11 @@ type ConnectionEndpointSpec interface {
 
 // Covers an IPv4 range
 type CIDRConnectionEndpoint struct {
-	IPnet net.IPNet
+	net.IPNet
 }
 
 type IPConnectionEndpoint struct {
-	IP net.IP
+	net.IP
 }
 
 // Covers all IPs outside of the private ranges
