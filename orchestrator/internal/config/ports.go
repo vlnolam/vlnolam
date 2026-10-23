@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/vlnolam/vlnolam/orchestrator/internal/errors"
 	"go.yaml.in/yaml/v4"
 )
 
@@ -50,7 +51,18 @@ func (p *Ports) UnmarshalYAML(node *yaml.Node) error {
 	return nil
 }
 
+func (p *Ports) Validate() *errors.Error {
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			err.PrependPath("ports/%d", i)
+			return err
+		}
+	}
+	return nil
+}
+
 type PortSpec interface {
+	Validate() *errors.Error
 }
 
 func unmarshalPortSpec(node *yaml.Node, spec *PortSpec) error {
@@ -81,7 +93,24 @@ type SinglePort struct {
 	Port Port
 }
 
+func (s *SinglePort) Validate() *errors.Error {
+	if s.Port == 0 {
+		return errors.New("port_zero_not_allowed", nil)
+	}
+	return nil
+}
+
 type PortRange struct {
 	From Port
 	To   Port // Inclusive
+}
+
+func (r *PortRange) Validate() *errors.Error {
+	if r.From == 0 || r.To == 0 {
+		return errors.New("port_zero_not_allowed", nil)
+	}
+	if r.From > r.To {
+		return errors.New("port_range_invalid", nil)
+	}
+	return nil
 }

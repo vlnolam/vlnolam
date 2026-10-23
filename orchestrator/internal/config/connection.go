@@ -91,6 +91,10 @@ func (c *TCPUDPConnection) Validate(dir ConnectionDirection) *errors.Error {
 		return errors.New("no_ports_specified", nil)
 	}
 
+	if err := c.Ports.Validate(); err != nil {
+		return err
+	}
+
 	return nil
 }
 
