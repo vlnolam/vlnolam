@@ -82,7 +82,9 @@ func (stack *Stack) ParseBytes(data []byte) *errors.Error {
 func (stack *Stack) ParseFile(path string) *errors.Error {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return errors.Wrap("file_error", err)
+		e := errors.Wrap("file_error", err)
+		e.Data["file"] = path
+		return e
 	}
 
 	return stack.ParseBytes(data)
