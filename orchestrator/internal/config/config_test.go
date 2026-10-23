@@ -1,6 +1,7 @@
 package config
 
 import (
+	"bytes"
 	"os"
 	"path/filepath"
 	"testing"
@@ -25,28 +26,29 @@ func TestConfigErrors(t *testing.T) {
 			scenarioPath := filepath.Join(scenarioDir, entry.Name())
 			scenarioData, _ := os.ReadFile(scenarioPath)
 
-			var scenarioMap map[string]interface{}
-			if err := yaml.Unmarshal(scenarioData, &scenarioMap); err != nil {
-				t.Fatalf("Failed to parse scenario file: %v", err)
+			var scenario struct {
+				Config        yaml.Node
+				ExpectedError string `yaml:"expected_error"`
 			}
 
-			configYaml, _ := yaml.Marshal(scenarioMap["config"])
+			decoder := yaml.NewDecoder(bytes.NewReader(scenarioData))
+			decoder.KnownFields(true)
+			decoder.Decode(&scenario)
 
 			stack := Stack{}
+			configYaml, _ := yaml.Marshal(scenario.Config) // node re-emits in original order, original style
 			err := stack.ParseBytes(configYaml)
 			if err == nil {
 				err = stack.Validate()
 			}
 
-			expectedError := scenarioMap["expected_error"].(string)
-
 			if err == nil {
-				t.Errorf("Expected error %q but parsing succeeded", expectedError)
+				t.Errorf("Expected error %q but parsing succeeded", scenario.ExpectedError)
 				return
 			}
 
-			if err.Data["key"] != expectedError {
-				t.Errorf("Expected error %q but got %q", expectedError, err.Data["key"])
+			if err.Data["key"] != scenario.ExpectedError {
+				t.Errorf("Expected error %q but got %q", scenario.ExpectedError, err.Data["key"])
 				t.Logf("Full error: %+v", err)
 				return
 			}
