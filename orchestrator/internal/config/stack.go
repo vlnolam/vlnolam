@@ -47,8 +47,8 @@ func (sc *Stack) Validate() *errors.Error {
 	return nil
 }
 
-func ParseString(data string) (*Stack, *errors.Error) {
-	decoder := yaml.NewDecoder(bytes.NewReader([]byte(data)))
+func ParseBytes(data []byte) (*Stack, *errors.Error) {
+	decoder := yaml.NewDecoder(bytes.NewReader(data))
 	decoder.KnownFields(true)
 
 	var stack Stack
@@ -69,5 +69,5 @@ func ParseFile(path string) (*Stack, *errors.Error) {
 		return nil, errors.Wrap("file_error", err)
 	}
 
-	return ParseString(string(data))
+	return ParseBytes(data)
 }

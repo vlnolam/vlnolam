@@ -1,0 +1,4 @@
+expected_error: unsupported_version
+config:
+  stack: test
+  version: -1
