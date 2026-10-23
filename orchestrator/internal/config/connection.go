@@ -29,8 +29,23 @@ func (c Connection) String() string {
 	return fmt.Sprintf("%+v", c.ConnectionSpec)
 }
 
+type header struct {
+	Protocol Protocol
+}
+
+func parseConnection[body ConnectionSpec](c *Connection, node *yaml.Node) error {
+	type headerAndBody struct {
+		Header header `yaml:",inline"`
+		Body   body   `yaml:",inline"`
+	}
+	data := headerAndBody{}
+	err := decodeStrict(node, &data)
+	c.ConnectionSpec = data.Body
+	return err
+}
+
 func (c *Connection) UnmarshalYAML(node *yaml.Node) error {
-	var header ConnectionHeader
+	var header header
 	if err := node.Decode(&header); err != nil {
 		return err
 	}
@@ -38,40 +53,25 @@ func (c *Connection) UnmarshalYAML(node *yaml.Node) error {
 	switch header.Protocol {
 
 	case "", ProtocolTCP:
-		conn := &TCPConnection{}
-		// Fill in for the "" case
-		// Must come after decode bcs it could overwrite it (by using protocol: "")
-		defer conn.setProtocol(ProtocolTCP)
-		c.ConnectionSpec = conn
+		return parseConnection[*TCPConnection](c, node)
 
 	case ProtocolUDP:
-		c.ConnectionSpec = &UDPConnection{}
+		return parseConnection[*UDPConnection](c, node)
 
 	default:
 		return fmt.Errorf("line %d: unknown protocol %q", node.Line, header.Protocol)
 
 	}
-
-	return decodeStrict(node, c.ConnectionSpec)
 }
 
 type ConnectionSpec interface {
 	Validate(dir ConnectionDirection) *errors.Error
 }
 
-type ConnectionHeader struct {
-	Protocol Protocol
-}
-
-func (h *ConnectionHeader) setProtocol(p Protocol) {
-	h.Protocol = p
-}
-
 type TCPUDPConnection struct {
-	ConnectionHeader `yaml:",inline"`
-	Target           ConnectionEndpoint
-	Source           ConnectionEndpoint
-	Ports            any // TODO
+	Target ConnectionEndpoint
+	Source ConnectionEndpoint
+	Ports  any // TODO
 }
 
 func (c *TCPUDPConnection) Validate(dir ConnectionDirection) *errors.Error {

@@ -24,7 +24,11 @@ func (e *ConnectionEndpoint) UnmarshalYAML(node *yaml.Node) error {
 
 	switch v := raw.(type) {
 	case string:
-		if v == "internet" {
+		if v == "any" {
+			e.ConnectionEndpointSpec = &AnyConnectionEndpoint{}
+			return nil
+
+		} else if v == "internet" {
 			e.ConnectionEndpointSpec = &InternetConnectionEndpoint{}
 			return nil
 
@@ -45,6 +49,7 @@ func (e *ConnectionEndpoint) UnmarshalYAML(node *yaml.Node) error {
 		}
 
 	case map[string]interface{}:
+		// TODO
 		return fmt.Errorf("line %d: object endpoints not yet supported", node.Line)
 
 	default:
@@ -70,4 +75,12 @@ type InternetConnectionEndpoint struct {
 
 func (e *InternetConnectionEndpoint) String() string {
 	return "internet"
+}
+
+// Covers all IPs everywhere
+type AnyConnectionEndpoint struct {
+}
+
+func (e *AnyConnectionEndpoint) String() string {
+	return "any"
 }
