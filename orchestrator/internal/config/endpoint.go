@@ -5,6 +5,7 @@ import (
 	"net"
 	"strings"
 
+	"github.com/vlnolam/vlnolam/orchestrator/internal/errors"
 	"go.yaml.in/yaml/v4"
 )
 
@@ -35,7 +36,7 @@ func (e *ConnectionEndpoint) UnmarshalYAML(node *yaml.Node) error {
 		} else if strings.Contains(v, "/") {
 			_, cidr, err := net.ParseCIDR(v)
 			if err != nil {
-				return fmt.Errorf("line %d: %w", node.Line, err)
+				return errors.Wrap("cidr_parse_error", err)
 			}
 			e.ConnectionEndpointSpec = &CIDRConnectionEndpoint{*cidr}
 			return nil
@@ -45,15 +46,15 @@ func (e *ConnectionEndpoint) UnmarshalYAML(node *yaml.Node) error {
 			return nil
 
 		} else {
-			return fmt.Errorf("line %d: unknown endpoint format: %q", node.Line, v)
+			return errors.New("unknown_endpoint_format", errors.Data{"value": v})
 		}
 
 	case map[string]interface{}:
 		// TODO
-		return fmt.Errorf("line %d: object endpoints not yet supported", node.Line)
+		return errors.New("object_endpoints_not_supported", nil)
 
 	default:
-		return fmt.Errorf("line %d: invalid endpoint type: %T", node.Line, v)
+		return errors.New("invalid_endpoint_type", errors.Data{"type": fmt.Sprintf("%T", v)})
 	}
 }
 

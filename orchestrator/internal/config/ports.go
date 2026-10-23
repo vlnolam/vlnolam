@@ -85,7 +85,7 @@ func unmarshalPortSpec(node *yaml.Node, spec *PortSpec) error {
 		return nil
 
 	default:
-		return fmt.Errorf("invalid port spec")
+		return errors.New("invalid_port_spec", nil)
 	}
 }
 

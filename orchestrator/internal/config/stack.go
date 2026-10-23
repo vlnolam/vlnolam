@@ -55,7 +55,7 @@ func (stack *Stack) ParseBytes(data []byte) *errors.Error {
 
 		var header versionHeader
 		if err := decoder.Decode(&header); err != nil {
-			return errors.Wrap("config_parse_error", err)
+			return wrapParseError(err)
 		}
 
 		if header.Version < minVersion || header.Version > maxVersion {
@@ -72,7 +72,7 @@ func (stack *Stack) ParseBytes(data []byte) *errors.Error {
 
 	var stackExt stackAndVersion
 	if err := decoder.Decode(&stackExt); err != nil {
-		return errors.Wrap("config_parse_error", err)
+		return wrapParseError(err)
 	}
 
 	*stack = stackExt.Stack

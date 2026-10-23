@@ -1,0 +1,10 @@
+expected_error: unknown_protocol
+config:
+  version: 1
+  stack: s
+  services:
+    - name: a
+      egress:
+        - target: internet
+          ports: 80
+          protocol: ftp

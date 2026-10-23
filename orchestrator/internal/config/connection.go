@@ -59,7 +59,7 @@ func (c *Connection) UnmarshalYAML(node *yaml.Node) error {
 		return parseConnection[*UDPConnection](c, node)
 
 	default:
-		return fmt.Errorf("line %d: unknown protocol %q", node.Line, header.Protocol)
+		return errors.New("unknown_protocol", errors.Data{"protocol": header.Protocol})
 
 	}
 }

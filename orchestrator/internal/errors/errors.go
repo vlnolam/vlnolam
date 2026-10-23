@@ -31,6 +31,11 @@ func New(key string, data Data) *Error {
 
 // Wrap wraps a stdlib error into our application error (adds an error code)
 func Wrap(key string, err error) *Error {
+	// Don't wrap errors that are already our custom type
+	if e, ok := err.(*Error); ok {
+		return e
+	}
+
 	return &Error{
 		Data: Data{
 			"key":     key,

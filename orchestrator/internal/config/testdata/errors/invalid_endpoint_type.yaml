@@ -1,0 +1,9 @@
+expected_error: invalid_endpoint_type
+config:
+  version: 1
+  stack: s
+  services:
+    - name: a
+      egress:
+        - target: 123
+          ports: 80

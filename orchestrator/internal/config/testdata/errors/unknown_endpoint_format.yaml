@@ -1,0 +1,9 @@
+expected_error: unknown_endpoint_format
+config:
+  version: 1
+  stack: s
+  services:
+    - name: a
+      egress:
+        - target: xyz
+          ports: 80

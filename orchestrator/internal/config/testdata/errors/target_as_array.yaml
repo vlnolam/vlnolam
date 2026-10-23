@@ -1,4 +1,4 @@
-expected_error: config_parse_error
+expected_error: invalid_endpoint_type
 config:
   version: 1
   stack: s

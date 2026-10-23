@@ -1,0 +1,11 @@
+expected_error: invalid_port_spec
+config:
+  version: 1
+  stack: s
+  services:
+    - name: a
+      egress:
+        - target: internet
+          ports:
+            - 80
+            - [90]

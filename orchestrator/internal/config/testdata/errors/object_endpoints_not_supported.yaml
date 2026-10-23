@@ -1,0 +1,9 @@
+expected_error: object_endpoints_not_supported
+config:
+  version: 1
+  stack: s
+  services:
+    - name: a
+      egress:
+        - target: {foo: bar}
+          ports: 80
