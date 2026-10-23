@@ -78,12 +78,12 @@ func (c *TCPUDPConnection) Validate(dir ConnectionDirection) *errors.Error {
 	switch dir {
 	case EgressConnection:
 		if c.Target == (ConnectionEndpoint{}) {
-			return errors.New(errors.ErrConfigValidation, "target required for egress connections", nil)
+			return errors.New("target_required_for_egress", nil)
 		}
 
 	case IngressConnection:
 		if c.Source == (ConnectionEndpoint{}) {
-			return errors.New(errors.ErrConfigValidation, "source required for ingress connections", nil)
+			return errors.New("source_required_for_ingress", nil)
 		}
 	}
 

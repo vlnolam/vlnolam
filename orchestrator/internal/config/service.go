@@ -14,7 +14,7 @@ type Service struct {
 
 func (svc *Service) Validate() *errors.Error {
 	if svc.Name == "" {
-		return errors.New(errors.ErrConfigValidation, "service name is required", nil)
+		return errors.New("service_name_required", nil)
 	}
 
 	for i, egress := range svc.Egress {

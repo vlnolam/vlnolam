@@ -19,11 +19,11 @@ type Stack struct {
 
 func (sc *Stack) Validate() *errors.Error {
 	if sc.Stack == "" {
-		return errors.New(errors.ErrConfigValidation, "stack name is required", nil)
+		return errors.New("stack_name_required", nil)
 	}
 
 	if sc.Version < minVersion || sc.Version > maxVersion {
-		return errors.New(errors.ErrConfigValidation, "version out of accepted bounds", errors.Data{"min": maxVersion, "max": maxVersion})
+		return errors.New("unsupported_version", errors.Data{"min": maxVersion, "max": maxVersion})
 	}
 
 	for _, svc := range sc.Services {
@@ -42,7 +42,7 @@ func ParseString(data string) (*Stack, *errors.Error) {
 
 	var stack Stack
 	if err := decoder.Decode(&stack); err != nil {
-		return nil, errors.Wrap(errors.ErrConfigParsing, err)
+		return nil, errors.Wrap("config_parse_error", err)
 	}
 
 	if err := stack.Validate(); err != nil {
@@ -55,7 +55,7 @@ func ParseString(data string) (*Stack, *errors.Error) {
 func ParseFile(path string) (*Stack, *errors.Error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return nil, errors.Wrap(errors.ErrFile, err)
+		return nil, errors.Wrap("file_error", err)
 	}
 
 	return ParseString(string(data))
