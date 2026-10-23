@@ -33,7 +33,9 @@ func TestConfigErrors(t *testing.T) {
 
 			decoder := yaml.NewDecoder(bytes.NewReader(scenarioData))
 			decoder.KnownFields(true)
-			decoder.Decode(&scenario)
+			if err := decoder.Decode(&scenario); err != nil {
+				t.Fatalf("Malformed scenario %s: %v", entry.Name(), err)
+			}
 
 			stack := Stack{}
 			configYaml, _ := yaml.Marshal(scenario.Config) // node re-emits in original order, original style
