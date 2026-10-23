@@ -31,7 +31,12 @@ func TestConfigErrors(t *testing.T) {
 			}
 
 			configYaml, _ := yaml.Marshal(scenarioMap["config"])
-			_, err := ParseBytes(configYaml)
+
+			stack := Stack{}
+			err := stack.ParseBytes(configYaml)
+			if err == nil {
+				err = stack.Validate()
+			}
 
 			expectedError := scenarioMap["expected_error"].(string)
 

@@ -8,8 +8,14 @@ import (
 )
 
 func main() {
-	stack, err := config.ParseFile("config.yaml")
-	if err != nil {
+	var stack config.Stack
+
+	if err := stack.ParseFile("config.yaml"); err != nil {
+		fmt.Printf("%v\n", err)
+		os.Exit(1)
+	}
+
+	if err := stack.Validate(); err != nil {
 		fmt.Printf("%v\n", err)
 		os.Exit(1)
 	}
