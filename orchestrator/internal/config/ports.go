@@ -70,7 +70,7 @@ func unmarshalPortSpec(node *yaml.Node, spec *PortSpec) error {
 
 	case yaml.ScalarNode:
 		var port Port
-		if err := node.Decode(&port); err != nil {
+		if err := decodeStrict(node, &port); err != nil {
 			return err
 		}
 		*spec = &SinglePort{Port: port}
@@ -78,7 +78,7 @@ func unmarshalPortSpec(node *yaml.Node, spec *PortSpec) error {
 
 	case yaml.MappingNode:
 		var r PortRange
-		if err := node.Decode(&r); err != nil {
+		if err := decodeStrict(node, &r); err != nil {
 			return err
 		}
 		*spec = &r
