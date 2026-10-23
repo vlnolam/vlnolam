@@ -1,0 +1,9 @@
+expected_error: port_zero_not_allowed
+config:
+  version: 1
+  stack: s
+  services:
+    - name: a
+      egress:
+        - target: internet
+          ports: {from: 0, to: 1}

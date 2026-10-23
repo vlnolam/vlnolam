@@ -1,0 +1,3 @@
+expected_error: config_parse_error
+config:
+  test: x

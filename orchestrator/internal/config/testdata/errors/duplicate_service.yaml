@@ -1,0 +1,7 @@
+expected_error: duplicate_service_definition
+config:
+  version: 1
+  stack: s
+  services:
+    - name: a
+    - name: a

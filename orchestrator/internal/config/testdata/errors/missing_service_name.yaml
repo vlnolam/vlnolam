@@ -1,0 +1,8 @@
+expected_error: service_name_required
+config:
+  version: 1
+  stack: s
+  services:
+    - egress:
+        - target: internet
+          ports: 80

@@ -1,0 +1,9 @@
+expected_error: port_range_invalid
+config:
+  version: 1
+  stack: s
+  services:
+    - name: a
+      egress:
+        - target: internet
+          ports: {from: 90, to: 80}

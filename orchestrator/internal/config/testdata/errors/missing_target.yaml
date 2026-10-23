@@ -1,0 +1,8 @@
+expected_error: target_required_for_egress
+config:
+  version: 1
+  stack: s
+  services:
+    - name: a
+      egress:
+        - ports: 80

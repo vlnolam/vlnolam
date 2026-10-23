@@ -1,0 +1,8 @@
+expected_error: source_required_for_ingress
+config:
+  version: 1
+  stack: s
+  services:
+    - name: a
+      ingress:
+        - ports: 80

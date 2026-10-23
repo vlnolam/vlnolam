@@ -1,0 +1,8 @@
+expected_error: no_ports_specified
+config:
+  version: 1
+  stack: s
+  services:
+    - name: a
+      egress:
+        - target: internet
