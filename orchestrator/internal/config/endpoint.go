@@ -12,6 +12,10 @@ type ConnectionEndpoint struct {
 	ConnectionEndpointSpec
 }
 
+func (c ConnectionEndpoint) String() string {
+	return fmt.Sprintf("%+v", c.ConnectionEndpointSpec)
+}
+
 func (e *ConnectionEndpoint) UnmarshalYAML(node *yaml.Node) error {
 	var raw interface{}
 	if err := node.Decode(&raw); err != nil {
@@ -62,4 +66,8 @@ type IPConnectionEndpoint struct {
 
 // Covers all IPs outside of the private ranges
 type InternetConnectionEndpoint struct {
+}
+
+func (e *InternetConnectionEndpoint) String() string {
+	return "internet"
 }

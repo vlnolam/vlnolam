@@ -14,12 +14,19 @@ const (
 	EgressConnection
 )
 
+type Protocol string
+
+const (
+	ProtocolTCP Protocol = "tcp"
+	ProtocolUDP Protocol = "udp"
+)
+
 type Connection struct {
 	ConnectionSpec
 }
 
 func (c Connection) String() string {
-	return fmt.Sprintf("Connection{Spec:%+v}", c.ConnectionSpec)
+	return fmt.Sprintf("%+v", c.ConnectionSpec)
 }
 
 func (c *Connection) UnmarshalYAML(node *yaml.Node) error {
@@ -29,12 +36,20 @@ func (c *Connection) UnmarshalYAML(node *yaml.Node) error {
 	}
 
 	switch header.Protocol {
-	case "", "tcp":
-		c.ConnectionSpec = &TCPConnection{}
-	case "udp":
+
+	case "", ProtocolTCP:
+		conn := &TCPConnection{}
+		// Fill in for the "" case
+		// Must come after decode bcs it could overwrite it (by using protocol: "")
+		defer conn.setProtocol(ProtocolTCP)
+		c.ConnectionSpec = conn
+
+	case ProtocolUDP:
 		c.ConnectionSpec = &UDPConnection{}
+
 	default:
 		return fmt.Errorf("line %d: unknown protocol %q", node.Line, header.Protocol)
+
 	}
 
 	return decodeStrict(node, c.ConnectionSpec)
@@ -45,7 +60,11 @@ type ConnectionSpec interface {
 }
 
 type ConnectionHeader struct {
-	Protocol string
+	Protocol Protocol
+}
+
+func (h *ConnectionHeader) setProtocol(p Protocol) {
+	h.Protocol = p
 }
 
 type TCPUDPConnection struct {
