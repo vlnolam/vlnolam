@@ -37,7 +37,7 @@ func (c *Connection) UnmarshalYAML(node *yaml.Node) error {
 		return fmt.Errorf("line %d: unknown protocol %q", node.Line, header.Protocol)
 	}
 
-	return node.Decode(c.ConnectionSpec)
+	return decodeStrict(node, c.ConnectionSpec)
 }
 
 type ConnectionSpec interface {
