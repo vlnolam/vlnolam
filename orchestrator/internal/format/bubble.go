@@ -36,12 +36,18 @@ func (f *BubbleFormatter) EnsureInit() {
 	f.isInit = true
 }
 
-func (f *BubbleFormatter) Done() {
-	f.EnsureInit()
+func (f *BubbleFormatter) Finalize() {
+	if !f.isInit {
+		return
+	}
 
-	f.program.Println(doneStyle.Render(iconCheck + " Done"))
 	f.program.Quit()
 	f.waitGroup.Wait()
+}
+
+func (f *BubbleFormatter) Done() {
+	f.EnsureInit()
+	f.program.Println(doneStyle.Render(iconCheck + " Done"))
 }
 
 func (f *BubbleFormatter) Error(e *errors.Error) {
@@ -49,15 +55,11 @@ func (f *BubbleFormatter) Error(e *errors.Error) {
 
 	f.program.Println(errorStyle.Render(iconError + " Error: " + e.Data["key"].(string)))
 	for key, value := range e.Data {
-		if key == "key" || key == "message" {
+		if key == "key" {
 			continue
 		}
 
-		f.program.Printf("  %s: %s\n", key, value)
-	}
-
-	if msg := e.Data["message"]; msg != "" {
-		f.program.Printf("\n%s\n", msg)
+		f.program.Printf("  %s: %s", key, value)
 	}
 }
 

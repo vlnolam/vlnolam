@@ -19,10 +19,12 @@ func Execute() {
 
 	if err := newCLI(&params).Execute(); err != nil {
 		params.Formatter.Error(errors.Wrap("cli_error", err))
-		os.Exit(-1)
+		params.Formatter.Finalize()
+		os.Exit(1)
 	}
 
 	params.Formatter.Done()
+	params.Formatter.Finalize()
 }
 
 func newCLI(params *GlobalParams) *cobra.Command {
