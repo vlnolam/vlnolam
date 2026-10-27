@@ -15,7 +15,7 @@ type GlobalParams struct {
 
 func Execute() {
 	var params GlobalParams
-	params.Formatter = &format.BubbleFormatter{}
+	params.Formatter = &format.SimpleFormatter{}
 
 	if err := newCLI(&params).Execute(); err != nil {
 		params.Formatter.Error(errors.Wrap("cli_error", err))
