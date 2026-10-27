@@ -23,7 +23,6 @@ func Execute() {
 		os.Exit(1)
 	}
 
-	params.Formatter.Done()
 	params.Formatter.Finalize()
 }
 
