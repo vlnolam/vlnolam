@@ -1,74 +1,50 @@
 package cli
 
 import (
-	"encoding/json"
-	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/vlnolam/vlnolam/orchestrator/internal/config"
 	"github.com/vlnolam/vlnolam/orchestrator/internal/errors"
+	"github.com/vlnolam/vlnolam/orchestrator/internal/format"
 )
 
-type GlobalArgs struct {
-	JsonMode bool
+type GlobalParams struct {
+	Formatter format.Formatter
 }
 
 func Execute() {
-	var globalArgs GlobalArgs
+	var params GlobalParams
+	params.Formatter = &format.BubbleFormatter{}
 
-	if err := newCLI(&globalArgs).Execute(); err != nil {
-		errorData := errors.Wrap("cli_error", err).Data
-
-		if globalArgs.JsonMode {
-			enc := json.NewEncoder(os.Stderr)
-			enc.Encode(map[string]any{"status": "error", "error": errorData})
-
-		} else {
-			fmt.Fprintf(os.Stderr, "[ERROR] %s\n", errorData["key"])
-			for key, value := range errorData {
-				if key == "key" || key == "message" {
-					continue
-				}
-
-				fmt.Fprintf(os.Stderr, "  %s: %s\n", key, value)
-			}
-
-			if msg := errorData["message"]; msg != "" {
-				fmt.Fprintf(os.Stderr, "\n%s\n", msg)
-			}
-		}
+	if err := newCLI(&params).Execute(); err != nil {
+		params.Formatter.Error(errors.Wrap("cli_error", err))
 		os.Exit(-1)
 	}
 
-	if globalArgs.JsonMode {
-		enc := json.NewEncoder(os.Stderr)
-		enc.Encode(map[string]any{"status": "done"})
-	}
+	params.Formatter.Done()
 }
 
-func newCLI(args *GlobalArgs) *cobra.Command {
+func newCLI(params *GlobalParams) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:           "vlnolam",
 		SilenceUsage:  true,
 		SilenceErrors: true,
 	}
 
-	cmd.PersistentFlags().BoolVar(&args.JsonMode, "json", false, "report in the JSON format")
-
-	cmd.AddCommand(newStackCommand(args))
+	cmd.AddCommand(newStackCommand(params))
 
 	return cmd
 }
 
-type StackArgs struct {
-	*GlobalArgs
+type StackParams struct {
+	*GlobalParams
 	StackFile string
 }
 
-func newStackCommand(parentArgs *GlobalArgs) *cobra.Command {
-	var args StackArgs
-	args.GlobalArgs = parentArgs
+func newStackCommand(parentParams *GlobalParams) *cobra.Command {
+	var params StackParams
+	params.GlobalParams = parentParams
 
 	cmd := &cobra.Command{
 		Use:   "stack",
@@ -76,26 +52,26 @@ func newStackCommand(parentArgs *GlobalArgs) *cobra.Command {
 		Args:  cobra.NoArgs,
 	}
 
-	cmd.PersistentFlags().StringVarP(&args.StackFile, "file", "f", "vlnolam.yaml", "stack definition file")
+	cmd.PersistentFlags().StringVarP(&params.StackFile, "file", "f", "vlnolam.yaml", "stack definition file")
 
-	cmd.AddCommand(newStackUpCommand(&args))
+	cmd.AddCommand(newStackUpCommand(&params))
 
 	return cmd
 }
 
-func newStackUpCommand(parentArgs *StackArgs) *cobra.Command {
-	var args struct {
-		*StackArgs
+func newStackUpCommand(parentParams *StackParams) *cobra.Command {
+	var params struct {
+		*StackParams
 	}
-	args.StackArgs = parentArgs
+	params.StackParams = parentParams
 
 	result := &cobra.Command{
 		Use:   "up",
 		Short: "Validate the stack and start all services",
 		Args:  cobra.NoArgs,
-		RunE: func(cmd *cobra.Command, cmdArgs []string) error {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			var stack config.Stack
-			if err := loadStack(&stack, args.StackFile); err != nil {
+			if err := loadStack(&stack, params.StackFile); err != nil {
 				return err
 			}
 			return nil
